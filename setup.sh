@@ -40,17 +40,6 @@ git clone git://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh
 # install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-# symlink zshrc
-ln -sf `pwd`/.zshrc ~/.zshrc
-
-# symlink zsh theme
-ln -sf `pwd`/zsh/dbprompt.zsh-theme ~/.oh-my-zsh/themes/dbprompt.zsh-theme
-
-# symlink zsh aliases
-# TODO: split out work specific and personal specific
-mkdir ~/zsh
-ln -sf `pwd`/zsh/completions ~/.oh-my-zsh/completions
-
 brew services start postgresql
 
 # git setup
