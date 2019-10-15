@@ -1,8 +1,14 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# DON"T USE this. didn't work when this was included... leaving for reference
+# export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python
+
+# brew doctor recommendation
+#export PATH="/usr/local/bin:$PATH"
+
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/Calayag/.oh-my-zsh
+export ZSH=/Users/alfredcalayag/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -55,10 +61,12 @@ plugins=(git git-extras virtualenvwrapper django heroku jira)
 
 
 # Customize to your needs...
-export PATH="/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:$PATH"
+export PATH="/usr/local/git/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
 export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 alias wb="cd $HOME/Documents/Projects/BetterWorks"
+alias gs="git status"
 alias gac="git add . && git commit"
 alias gap="git add -p"
 alias gcm="git commit -m"
@@ -68,6 +76,7 @@ alias gpo="git push --set-upstream origin \`git symbolic-ref --short HEAD\`"
 alias gbd="git branch -D "
 alias gpf="git push --force-with-lease"
 alias gd="git diff --minimal -w HEAD | cdiff -s -w 100"
+alias gs="git status"
 alias f8="flake8 -j auto"
 alias is="find . -name \"*.py\" -not -name appfiles | xargs -n 400 -P 8 isort -q"
 alias tt="py.test -s"
@@ -98,6 +107,7 @@ source $ZSH/oh-my-zsh.sh
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
+# ssh-add ~/.ssh/id_rsa
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -111,7 +121,7 @@ source $ZSH/oh-my-zsh.sh
 # DATABASE ALIASES
 # list all current dbs
 alias listdb="psql -c 'select datname from pg_database where datistemplate=false;'"
-  
+
 # copy a db, useful for testing PRs locally that involve migrations
 # this is super useful for pulling down and testing PRs locally that may involve migrations without having to re-pull data down from champagne later when you are done testing the PR
 # usage: copydb (current db name) (new db name)
@@ -119,13 +129,28 @@ alias listdb="psql -c 'select datname from pg_database where datistemplate=false
 copydb() {
   createdb -O $USERNAME -T $1 $2
 }
-  
+
 # sets current active db, tricky part is it is only for that terminal so if you have multiple open it can get fun
 setdb() {
   export DATABASE_URL=postgresql://$USERNAME@localhost:5432/$1
 }
-  
+
 # which db is currently set as my active db
 whichdb() {
   echo $DATABASE_URL
 }
+
+# creates a copy of 'betterworks-lemonade' db, sets the copy as the active db, and runs migrations
+quickdb() {
+    copydb betterworks-lemonade $1 && setdb $1 && ./manage.py migrate
+}
+
+# pull down a pr, activate and copy a lemonade db, and run the server
+cr() {
+    ./getpr.sh $1 && quickdb pr$1 && ./manage.py runserver
+}
+
+# ANDROID SDK
+export ANDROID_HOME=~/Library/Android/sdk
+export PATH=${PATH}:${ANDROID_HOME}/tools
+export PATH=${PATH}:${ANDROID_HOME}/platform-tools
